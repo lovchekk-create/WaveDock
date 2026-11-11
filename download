@@ -1,0 +1,14 @@
+# сборка
+bin/
+obj/
+publish/
+release/
+*.user
+.vs/
+
+# логи и временные файлы
+build.log
+release.log
+sdks.txt
+wavedock.log
+*.tmp

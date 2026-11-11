@@ -1,0 +1,464 @@
+<Window x:Class="WaveDock.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:WaveDock"
+        Title="WaveDock — настройки" Icon="pack://application:,,,/wavedock.ico" Width="500" Height="720"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" Topmost="True" ShowInTaskbar="True"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI Variable Display, Segoe UI" UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Ideal">
+    <Window.Resources>
+        <LinearGradientBrush x:Key="AccentBrush" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#9945FF" Offset="0"/>
+            <GradientStop Color="#14F195" Offset="1"/>
+        </LinearGradientBrush>
+
+        <Style x:Key="Section" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#8CFFFFFF"/>
+            <Setter Property="Margin" Value="0,22,0,6"/>
+        </Style>
+        <Style x:Key="Label" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#EBFFFFFF"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="Val" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="Foreground" Value="#99FFFFFF"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+        </Style>
+
+        <!-- переключатель -->
+        <Style x:Key="Toggle" TargetType="CheckBox">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Width="44" Height="24" Background="Transparent">
+                            <Border CornerRadius="12" Background="#2EFFFFFF"/>
+                            <Border x:Name="on" CornerRadius="12" Background="{DynamicResource AccentBrush}" Opacity="0"/>
+                            <Ellipse x:Name="knob" Width="18" Height="18" Fill="White" HorizontalAlignment="Left" Margin="3,0,0,0">
+                                <Ellipse.RenderTransform><TranslateTransform X="0"/></Ellipse.RenderTransform>
+                                <Ellipse.Effect><DropShadowEffect BlurRadius="6" ShadowDepth="1" Opacity="0.35"/></Ellipse.Effect>
+                            </Ellipse>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="knob" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="20" Duration="0:0:0.25">
+                                                <DoubleAnimation.EasingFunction><BackEase Amplitude="0.5" EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                            <DoubleAnimation Storyboard.TargetName="on" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="knob" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="0" Duration="0:0:0.25">
+                                                <DoubleAnimation.EasingFunction><BackEase Amplitude="0.5" EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                            <DoubleAnimation Storyboard.TargetName="on" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- сегмент-кнопка -->
+        <Style x:Key="Segment" TargetType="RadioButton">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Foreground" Value="#CCFFFFFF"/>
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="Margin" Value="6,0,0,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="bd" CornerRadius="9" Padding="12,6" Background="#14FFFFFF">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#29FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- кружок-пресет цвета -->
+        <Style x:Key="Swatch" TargetType="Button">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="0,0,10,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="g" RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform><ScaleTransform/></Grid.RenderTransform>
+                            <Ellipse Fill="{TemplateBinding Background}"/>
+                            <Ellipse Stroke="#4DFFFFFF" StrokeThickness="1.5"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="g" Property="RenderTransform">
+                                    <Setter.Value><ScaleTransform ScaleX="1.15" ScaleY="1.15"/></Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="g" Property="Opacity" Value="0.75"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- поле HEX -->
+        <Style x:Key="Hex" TargetType="TextBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="CaretBrush" Value="White"/>
+            <Setter Property="SelectionBrush" Value="#9945FF"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Width" Value="92"/>
+            <Setter Property="MaxLength" Value="9"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="bd" CornerRadius="8" Background="#1AFFFFFF" BorderBrush="#26FFFFFF" BorderThickness="1" Padding="8,5">
+                            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#99FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- текстовая кнопка -->
+        <Style x:Key="TextBtn" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Foreground" Value="#FF9AA8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" CornerRadius="10" Padding="16,8" Background="#1FFF5577">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#38FF5577"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid x:Name="Root" Margin="22" RenderTransformOrigin="0.5,0.5">
+        <Grid.RenderTransform>
+            <ScaleTransform x:Name="RootScale" ScaleX="1" ScaleY="1"/>
+        </Grid.RenderTransform>
+
+        <Border CornerRadius="24" Background="#F70F0D18" BorderBrush="#24FFFFFF" BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect x:Name="Glow" BlurRadius="34" ShadowDepth="0" Opacity="0.5" Color="#9945FF"/>
+            </Border.Effect>
+        </Border>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- шапка -->
+            <Grid Margin="22,20,18,4" Background="Transparent" MouseLeftButtonDown="Header_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <local:WaveView x:Name="Preview" Width="56" Height="56" Radius="14"/>
+                <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="Настройки WaveDock" FontSize="21" FontWeight="SemiBold" Foreground="White"/>
+                    <TextBlock Text="Все изменения применяются сразу" FontSize="12.5" Foreground="#80FFFFFF" Margin="0,2,0,0"/>
+                </StackPanel>
+                <Button Grid.Column="2" Style="{StaticResource IconBtn}" Width="34" Height="34" FontSize="12"
+                        Content="&#xE711;" VerticalAlignment="Top" Click="Close_Click" ToolTip="Закрыть"/>
+            </Grid>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" Margin="0,0,0,0">
+                <StackPanel Margin="26,0,26,10">
+
+                    <!-- ===== КВАДРАТ ===== -->
+                    <TextBlock Style="{StaticResource Section}" Text="КВАДРАТ НА ПАНЕЛИ ЗАДАЧ"/>
+                    <Grid Margin="0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Размер"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="22" Maximum="42" SmallChange="1" IsSnapToTickEnabled="True" TickFrequency="1" Value="{Binding Size}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding Size, StringFormat='{}{0:0} px'}"/>
+                    </Grid>
+                    <Grid Margin="0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Скругление"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="0" Maximum="21" IsSnapToTickEnabled="True" TickFrequency="1" Value="{Binding CornerRadius}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding CornerRadius, StringFormat='{}{0:0}'}"/>
+                    </Grid>
+                    <Grid Margin="0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Фон квадрата"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="0" Maximum="1" Value="{Binding BgOpacity}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding BgOpacity, StringFormat='{}{0:P0}'}"/>
+                    </Grid>
+                    <Grid Margin="0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Свечение"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="0" Maximum="1" Value="{Binding Glow}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding Glow, StringFormat='{}{0:P0}'}"/>
+                    </Grid>
+                    <Grid Margin="0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Сдвиг вверх/вниз"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="-10" Maximum="10" IsSnapToTickEnabled="True" TickFrequency="1" Value="{Binding OffsetY}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding OffsetY, StringFormat='{}{0:0}'}"/>
+                    </Grid>
+                    <Grid Margin="0,8">
+                        <TextBlock Style="{StaticResource Label}" Text="Обводка"/>
+                        <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding Border}"/>
+                    </Grid>
+
+                    <!-- ===== ВОЛНЫ ===== -->
+                    <TextBlock Style="{StaticResource Section}" Text="ВОЛНЫ"/>
+                    <Grid Margin="0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Высота волн"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="0.2" Maximum="2.5" Value="{Binding WaveHeight}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding WaveHeight, StringFormat='{}{0:0.0}×'}"/>
+                    </Grid>
+                    <Grid Margin="0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Скорость"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="0.2" Maximum="3" Value="{Binding WaveSpeed}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding WaveSpeed, StringFormat='{}{0:0.0}×'}"/>
+                    </Grid>
+                    <Grid Margin="0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Слоёв волн"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="1" Maximum="3" IsSnapToTickEnabled="True" TickFrequency="1" Value="{Binding WaveLayers}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding WaveLayers, StringFormat='{}{0:0}'}"/>
+                    </Grid>
+                    <Grid Margin="0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Уровень заливки"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="0.2" Maximum="0.9" Value="{Binding FillLevel}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding FillLevel, StringFormat='{}{0:P0}'}"/>
+                    </Grid>
+
+                    <!-- ===== ЦВЕТА ===== -->
+                    <TextBlock Style="{StaticResource Section}" Text="ЦВЕТА"/>
+                    <Grid Margin="0,5">
+                        <TextBlock Style="{StaticResource Label}" Text="Источник"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <RadioButton GroupName="colors" Style="{StaticResource Segment}" Content="Из обложки" IsChecked="{Binding AutoColors}"/>
+                            <RadioButton GroupName="colors" Style="{StaticResource Segment}" Content="Свои" IsChecked="{Binding CustomColors}"/>
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock Style="{StaticResource Label}" Text="Готовые палитры" FontSize="12.5" Foreground="#99FFFFFF" Margin="0,12,0,8"/>
+                    <WrapPanel>
+                        <Button Style="{StaticResource Swatch}" Tag="#9945FF,#14F195" Click="Preset_Click" ToolTip="Solana">
+                            <Button.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#9945FF" Offset="0"/><GradientStop Color="#14F195" Offset="1"/></LinearGradientBrush></Button.Background>
+                        </Button>
+                        <Button Style="{StaticResource Swatch}" Tag="#FF5F6D,#FFC371" Click="Preset_Click" ToolTip="Закат">
+                            <Button.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#FF5F6D" Offset="0"/><GradientStop Color="#FFC371" Offset="1"/></LinearGradientBrush></Button.Background>
+                        </Button>
+                        <Button Style="{StaticResource Swatch}" Tag="#00C6FF,#0072FF" Click="Preset_Click" ToolTip="Океан">
+                            <Button.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#00C6FF" Offset="0"/><GradientStop Color="#0072FF" Offset="1"/></LinearGradientBrush></Button.Background>
+                        </Button>
+                        <Button Style="{StaticResource Swatch}" Tag="#FF00CC,#7B2FF7" Click="Preset_Click" ToolTip="Неон">
+                            <Button.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#FF00CC" Offset="0"/><GradientStop Color="#7B2FF7" Offset="1"/></LinearGradientBrush></Button.Background>
+                        </Button>
+                        <Button Style="{StaticResource Swatch}" Tag="#A8FF78,#78FFD6" Click="Preset_Click" ToolTip="Мята">
+                            <Button.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#A8FF78" Offset="0"/><GradientStop Color="#78FFD6" Offset="1"/></LinearGradientBrush></Button.Background>
+                        </Button>
+                        <Button Style="{StaticResource Swatch}" Tag="#F12711,#F5AF19" Click="Preset_Click" ToolTip="Огонь">
+                            <Button.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#F12711" Offset="0"/><GradientStop Color="#F5AF19" Offset="1"/></LinearGradientBrush></Button.Background>
+                        </Button>
+                        <Button Style="{StaticResource Swatch}" Tag="#FC466B,#3F5EFB" Click="Preset_Click" ToolTip="Синтвейв">
+                            <Button.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#FC466B" Offset="0"/><GradientStop Color="#3F5EFB" Offset="1"/></LinearGradientBrush></Button.Background>
+                        </Button>
+                        <Button Style="{StaticResource Swatch}" Tag="#E0E0E0,#7A7A8C" Click="Preset_Click" ToolTip="Графит">
+                            <Button.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#E0E0E0" Offset="0"/><GradientStop Color="#7A7A8C" Offset="1"/></LinearGradientBrush></Button.Background>
+                        </Button>
+                    </WrapPanel>
+                    <Grid Margin="0,4" IsEnabled="{Binding CustomColors}">
+                        <TextBlock Style="{StaticResource Label}" Text="Свои цвета (HEX)"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Border Width="22" Height="22" CornerRadius="11" Background="{Binding Color1}" Margin="0,0,8,0" BorderBrush="#4DFFFFFF" BorderThickness="1"/>
+                            <TextBox Style="{StaticResource Hex}" Text="{Binding Color1, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Border Width="22" Height="22" CornerRadius="11" Background="{Binding Color2}" Margin="14,0,8,0" BorderBrush="#4DFFFFFF" BorderThickness="1"/>
+                            <TextBox Style="{StaticResource Hex}" Text="{Binding Color2, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- ===== ПЛЕЕР ===== -->
+                    <TextBlock Style="{StaticResource Section}" Text="ВСПЛЫВАЮЩИЙ ПЛЕЕР"/>
+                    <Grid Margin="0,5">
+                        <TextBlock Style="{StaticResource Label}" Text="Открывать"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <RadioButton GroupName="open" Style="{StaticResource Segment}" Content="По клику" IsChecked="{Binding OpenOnClick}"/>
+                            <RadioButton GroupName="open" Style="{StaticResource Segment}" Content="При наведении" IsChecked="{Binding OpenOnHover}"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Margin="0,5">
+                        <TextBlock Style="{StaticResource Label}" Text="Анимация"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <RadioButton GroupName="anim" Style="{StaticResource Segment}" Content="Пружинистая" IsChecked="{Binding SpringAnim}"/>
+                            <RadioButton GroupName="anim" Style="{StaticResource Segment}" Content="Плавная" IsChecked="{Binding SmoothAnim}"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Margin="0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Скорость анимаций"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="0.5" Maximum="2.5" Value="{Binding AnimSpeed}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding AnimSpeed, StringFormat='{}{0:0.0}×'}"/>
+                    </Grid>
+                    <Grid Margin="0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Непрозрачность"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="0.4" Maximum="1" Value="{Binding PopupOpacity}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding PopupOpacity, StringFormat='{}{0:P0}'}"/>
+                    </Grid>
+                    <Grid Margin="0,8">
+                        <TextBlock Style="{StaticResource Label}" Text="Размытая обложка на фоне"/>
+                        <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding BlurCover}"/>
+                    </Grid>
+
+                    <!-- ===== ЗВУК И УВЕДОМЛЕНИЯ ===== -->
+                    <TextBlock Style="{StaticResource Section}" Text="ЗВУК И УВЕДОМЛЕНИЯ"/>
+                    <Grid Margin="0,8">
+                        <TextBlock Style="{StaticResource Label}" Text="Волны реагируют на звук"/>
+                        <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding AudioReactive}"/>
+                    </Grid>
+                    <Grid Margin="0,5" IsEnabled="{Binding AudioReactive}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Чувствительность"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="0.3" Maximum="2.5" Value="{Binding Sensitivity}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding Sensitivity, StringFormat='{}{0:0.0}×'}"/>
+                    </Grid>
+                    <Grid Margin="0,8">
+                        <TextBlock Style="{StaticResource Label}" Text="Плашка «Сейчас играет» при смене трека"/>
+                        <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding TrackToast}"/>
+                    </Grid>
+                    <Grid Margin="0,5" IsEnabled="{Binding TrackToast}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="48"/></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Label}" Text="Показывать"/>
+                        <Slider Grid.Column="1" Style="{StaticResource ModernSlider}" Minimum="1.5" Maximum="8" Value="{Binding ToastSeconds}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Val}" Text="{Binding ToastSeconds, StringFormat='{}{0:0.0} с'}"/>
+                    </Grid>
+                    <TextBlock Text="Громкость: Ctrl + колесо мыши по квадрату или ползунок в плеере"
+                               FontSize="12" Foreground="#80FFFFFF" TextWrapping="Wrap" Margin="0,6,0,0"/>
+
+                    <!-- ===== ГОРЯЧИЕ КЛАВИШИ ===== -->
+                    <TextBlock Style="{StaticResource Section}" Text="ГОРЯЧИЕ КЛАВИШИ (РАБОТАЮТ ВЕЗДЕ)"/>
+                    <Grid Margin="0,8">
+                        <TextBlock Style="{StaticResource Label}" Text="Включить горячие клавиши"/>
+                        <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding Hotkeys}"/>
+                    </Grid>
+                    <StackPanel IsEnabled="{Binding Hotkeys}">
+                        <Grid Margin="0,5">
+                            <TextBlock Style="{StaticResource Label}" Text="Сочетание"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <RadioButton GroupName="hk" Style="{StaticResource Segment}" Content="Ctrl+Alt" IsChecked="{Binding ModCtrlAlt}"/>
+                                <RadioButton GroupName="hk" Style="{StaticResource Segment}" Content="Ctrl+Shift" IsChecked="{Binding ModCtrlShift}"/>
+                                <RadioButton GroupName="hk" Style="{StaticResource Segment}" Content="Alt+Shift" IsChecked="{Binding ModAltShift}"/>
+                            </StackPanel>
+                        </Grid>
+                        <Border CornerRadius="12" Background="#0FFFFFFF" Padding="14,10" Margin="0,8,0,0">
+                            <TextBlock Text="{Binding HotkeyHint}" FontSize="12.5" Foreground="#CCFFFFFF" LineHeight="21"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- ===== DISCORD ===== -->
+                    <TextBlock Style="{StaticResource Section}" Text="СТАТУС В DISCORD"/>
+                    <Grid Margin="0,8">
+                        <TextBlock Style="{StaticResource Label}" Text="Показывать «Слушает WaveDock»"/>
+                        <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding DiscordStatus}"/>
+                    </Grid>
+                    <StackPanel IsEnabled="{Binding DiscordStatus}">
+                        <Grid Margin="0,8">
+                            <TextBlock Style="{StaticResource Label}" Text="Показывать и на паузе"/>
+                            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding DiscordShowPaused}"/>
+                        </Grid>
+                        <Grid Margin="0,6">
+                            <TextBlock Style="{StaticResource Label}" Text="ID приложения"/>
+                            <TextBox Style="{StaticResource Hex}" Width="190" MaxLength="24" HorizontalAlignment="Right"
+                                     Text="{Binding DiscordAppId, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
+                        <TextBlock Text="Discord должен быть запущен на этом компьютере. В Discord: Настройки → Конфиденциальность активности → «Показывать текущую активность»."
+                                   FontSize="12" Foreground="#80FFFFFF" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <!-- ===== ПОВЕДЕНИЕ ===== -->
+                    <TextBlock Style="{StaticResource Section}" Text="ПОВЕДЕНИЕ"/>
+                    <Grid Margin="0,8">
+                        <TextBlock Style="{StaticResource Label}" Text="Колесо мыши переключает треки"/>
+                        <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding WheelTracks}"/>
+                    </Grid>
+                    <Grid Margin="0,8">
+                        <TextBlock Style="{StaticResource Label}" Text="Средняя кнопка — пауза"/>
+                        <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding MiddlePause}"/>
+                    </Grid>
+                    <Grid Margin="0,8">
+                        <TextBlock Style="{StaticResource Label}" Text="Прятать в играх и полноэкранном видео"/>
+                        <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding HideFullscreen}"/>
+                    </Grid>
+                    <Grid Margin="0,8">
+                        <TextBlock Style="{StaticResource Label}" Text="Запускать вместе с Windows"/>
+                        <CheckBox x:Name="AutoChk" Style="{StaticResource Toggle}"/>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- подвал -->
+            <Grid Grid.Row="2" Margin="26,10,26,20">
+                <Button Style="{StaticResource TextBtn}" Content="Сбросить всё" HorizontalAlignment="Left" Click="Reset_Click"/>
+                <TextBlock Text="WaveDock 1.3 · колесо — прокрутка" FontSize="11.5" Foreground="#59FFFFFF"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
